@@ -320,7 +320,7 @@ export default function Home() {
       <footer className="text-center mt-8 mb-4 text-sm text-gray-500">
         Made with ❤️ —{" "}
         <a
-          href="https://www.buymeacoffee.com/harryrussin"
+          href="https://www.buymeacoffee.com/russinharri"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
