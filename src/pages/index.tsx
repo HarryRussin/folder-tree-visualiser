@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Head from "next/head";
+
 import JSZip from "jszip";
 import Tree, { TreeNode } from "../components/Tree";
 import ThemeSwitcher from "../components/ThemeSwitcher";
@@ -167,168 +169,232 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen p-6 bg-gradient-to-b from-white to-gray-100">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <header className="text-center my-8 max-w-2xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-2">Folder Tree Visualizer</h1>
-          <p className="text-gray-700 dark:text-gray-300">
-            Upload a ZIP file containing your project folder. Visualize its
-            structure as a clean tree diagram or an ASCII representation. Export
-            as SVG for docs or sharing.
-          </p>
-        </header>
-        <section className="mt-6 text-gray-700 dark:text-gray-300">
-  <h2 className="text-xl font-semibold mb-2">How to Use</h2>
+    <>
+    <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Folder Tree Visualizer",
+      "url": "https://folder-tree-visualiser.vercel.app",
+      "applicationCategory": "DeveloperTool",
+      "operatingSystem": "All",
+      "description":
+        "Upload ZIP files to visualize project folder structures as tree diagrams or ASCII views. Export SVGs easily.",
+    }),
+  }}
+></script>
+
+      <Head>
+        <title>
+          Folder Tree Visualizer – Upload ZIPs & Export Trees as SVG
+        </title>
+        <meta
+          name="description"
+          content="Visualize your project folder structure by uploading a ZIP file. View clean ASCII and graphical tree diagrams, collapse folders, and export as SVG images."
+        />
+        <meta
+          name="keywords"
+          content="folder visualizer, tree structure, zip upload, ascii tree, export svg, project structure viewer, directory tree, web folder viewer"
+        />
+        <meta name="author" content="Harry Russin" />
+        <meta property="og:title" content="Folder Tree Visualizer" />
+        <meta
+          property="og:description"
+          content="Upload a ZIP file and view your folder structure as a clean ASCII or graphical tree. Export it as an SVG for docs or presentations."
+        />
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://folder-tree-visualiser.vercel.app" />
+        <meta
+          property="og:image"
+          content="https://folder-tree-visualiser.vercel.app/og-image.png"
+        />
+      </Head>
+      <main className="min-h-screen p-6 bg-gradient-to-b from-white to-gray-100">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <header className="text-center my-8 max-w-2xl mx-auto px-4">
+            <h1 className="text-4xl font-bold mb-3">
+              Folder Tree Visualizer & ZIP Explorer
+            </h1>
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              Upload a ZIP file of your project and instantly view its directory
+              structure as a visual tree or ASCII layout. Export your folder
+              diagram as an SVG image to use in documentation, presentations, or
+              code reviews.
+            </p>
+          </header>
+
+<section className="mt-6 text-gray-700 dark:text-gray-300">
+  <h2 className="text-xl font-semibold mb-2">How to Use the Folder Visualizer</h2>
   <ul className="list-disc list-inside space-y-1">
-    <li>Click on folder names to expand or collapse them directly in the tree view.</li>
-    <li>Click on the tree or ASCII view to open a larger modal view.</li>
-    <li>Use the export button to download the current view as an SVG file.</li>
+    <li>Upload a <strong>.zip</strong> file to analyze its internal folder structure.</li>
+    <li>Click on folder names to expand or collapse nested directories directly in the tree views.</li>
+    <li>Click on a tree view (visual, ASCII, or vertical) to open a large modal preview.</li>
+    <li>Export the selected tree view as a high-quality <strong>SVG file</strong> for documentation or sharing.</li>
   </ul>
 </section>
 
 
-        <div className="flex justify-center items-center gap-4">
-          <label className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded cursor-pointer">
-            Upload ZIP
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".zip"
-              onChange={handleUpload}
-              className="hidden"
-            />
-          </label>
-          <ThemeSwitcher theme={theme} setTheme={setTheme} />
-        </div>
+          <div className="flex justify-center items-center gap-4">
+            <label className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded cursor-pointer">
+              Upload ZIP
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".zip"
+                onChange={handleUpload}
+                className="hidden"
+              />
+            </label>
+            <ThemeSwitcher theme={theme} setTheme={setTheme} />
+          </div>
 
-        {tree && (
-          <>
+          {tree && (
             <>
-              <div className="flex flex-col md:flex-row gap-4 border p-4 rounded max-h-[65vh] overflow-auto">
-                <div
-                  onClick={() => {
-                    setModalContent(
+              <>
+                <div className="flex flex-col md:flex-row gap-4 border p-4 rounded max-h-[65vh] overflow-auto">
+                  <div
+                    onClick={() => {
+                      setModalContent(
+                        <Tree
+                          node={tree}
+                          theme={theme}
+                          inlineStyle={getInlineStyle(theme)}
+                          collapsedMap={Object.fromEntries(
+                            Array.from(collapsedFolders).map((path) => [
+                              path,
+                              true,
+                            ])
+                          )}
+                          toggleCollapse={toggleFolder}
+                        />
+                      );
+                      setModalTitle("visual-tree");
+                    }}
+                    className="cursor-pointer basis-1/2 min-w-0 rounded overflow-auto"
+                    ref={treeRef}
+                    style={getInlineStyle(theme)}
+                  >
+                    <div className="p-4">
                       <Tree
                         node={tree}
                         theme={theme}
                         inlineStyle={getInlineStyle(theme)}
                         collapsedMap={Object.fromEntries(
-                        Array.from(collapsedFolders).map((path) => [path, true])
-                      )}
+                          Array.from(collapsedFolders).map((path) => [
+                            path,
+                            true,
+                          ])
+                        )}
                         toggleCollapse={toggleFolder}
                       />
+                    </div>
+                  </div>
+
+                  <pre
+                    onClick={() => {
+                      setModalContent(
+                        <pre style={getInlineStyle(theme)}>
+                          {generateAsciiTree(
+                            tree,
+                            Object.fromEntries(
+                              Array.from(collapsedFolders).map((p) => [p, true])
+                            )
+                          )}
+                        </pre>
+                      );
+                      setModalTitle("ascii-tree");
+                    }}
+                    ref={asciiRef}
+                    className={`cursor-pointer basis-1/2 min-w-0 rounded overflow-auto ${theme}`}
+                    style={{ ...getInlineStyle(theme), padding: "1rem" }}
+                  >
+                    {generateAsciiTree(
+                      tree,
+                      Object.fromEntries(
+                        [...collapsedFolders].map((p) => [p, true])
+                      )
+                    )}
+                  </pre>
+                </div>
+
+                <div
+                  onClick={() => {
+                    setModalContent(
+                      <VerticalTree
+                        node={tree}
+                        theme={theme}
+                        collapsedMap={Object.fromEntries(
+                          Array.from(collapsedFolders).map((path) => [
+                            path,
+                            true,
+                          ])
+                        )}
+                      />
                     );
-                    setModalTitle("visual-tree");
+                    setModalTitle("vertical-tree");
                   }}
-                  className="cursor-pointer basis-1/2 min-w-0 rounded overflow-auto"
-                  ref={treeRef}
-                  style={getInlineStyle(theme)}
+                  className="border p-4 rounded bg-white shadow-inner cursor-pointer"
                 >
-                  <div className="p-4">
-                    <Tree
+                  <div className="mt-8 overflow-auto max-w-full">
+                    <VerticalTree
                       node={tree}
                       theme={theme}
-                      inlineStyle={getInlineStyle(theme)}
                       collapsedMap={Object.fromEntries(
                         Array.from(collapsedFolders).map((path) => [path, true])
                       )}
-                      toggleCollapse={toggleFolder}
                     />
                   </div>
                 </div>
+              </>
 
-                <pre
-                  onClick={() => {
-                    setModalContent(
-                      <pre style={getInlineStyle(theme)}>
-                        {generateAsciiTree(
-                          tree,
-                          Object.fromEntries(
-                            Array.from(collapsedFolders).map((p) => [p, true])
-                          )
-                        )}
-                      </pre>
-                    );
-                    setModalTitle("ascii-tree");
-                  }}
-                  ref={asciiRef}
-                  className={`cursor-pointer basis-1/2 min-w-0 rounded overflow-auto ${theme}`}
-                  style={{ ...getInlineStyle(theme), padding: "1rem" }}
+              <div className="flex items-center gap-4 justify-center my-4 flex-wrap">
+                <select
+                  value={exportTarget}
+                  onChange={(e) =>
+                    setExportTarget(e.target.value as "tree" | "ascii")
+                  }
+                  className="border px-3 py-1 rounded"
                 >
-                  {generateAsciiTree(
-                    tree,
-                    Object.fromEntries(
-                      [...collapsedFolders].map((p) => [p, true])
-                    )
-                  )}
-                </pre>
-              </div>
+                  <option value="tree">Export Visual Tree</option>
+                  <option value="ascii">Export ASCII Tree</option>
+                </select>
 
-              <div
-                onClick={() => {
-                  setModalContent(<VerticalTree node={tree} theme={theme} collapsedMap={Object.fromEntries(
-      Array.from(collapsedFolders).map((path) => [path, true])
-    )} />);
-                  setModalTitle("vertical-tree");
-                }}
-                className="border p-4 rounded bg-white shadow-inner cursor-pointer"
-              >
-                <div className="mt-8 overflow-auto max-w-full">
-                  <VerticalTree
-                    node={tree}
-                    theme={theme}
-                    collapsedMap={Object.fromEntries(
-                      Array.from(collapsedFolders).map((path) => [path, true])
-                    )}
-                  />
-                </div>
+                <button
+                  onClick={handleExport}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                >
+                  Export as SVG
+                </button>
               </div>
             </>
-
-            <div className="flex items-center gap-4 justify-center my-4 flex-wrap">
-              <select
-                value={exportTarget}
-                onChange={(e) =>
-                  setExportTarget(e.target.value as "tree" | "ascii")
-                }
-                className="border px-3 py-1 rounded"
-              >
-                <option value="tree">Export Visual Tree</option>
-                <option value="ascii">Export ASCII Tree</option>
-              </select>
-
-              <button
-                onClick={handleExport}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-              >
-                Export as SVG
-              </button>
-            </div>
-          </>
+          )}
+        </div>
+        {modalContent && (
+          <TreeModal
+            theme={theme}
+            onClose={() => setModalContent(null)}
+            exportFileName={`${modalTitle}.svg`}
+          >
+            {modalContent}
+          </TreeModal>
         )}
-      </div>
-      {modalContent && (
-        <TreeModal
-          theme={theme}
-          onClose={() => setModalContent(null)}
-          exportFileName={`${modalTitle}.svg`}
-        >
-          {modalContent}
-        </TreeModal>
-      )}
 
-      <footer className="text-center mt-8 mb-4 text-sm text-gray-500">
-        Made with ❤️ —{" "}
-        <a
-          href="https://www.buymeacoffee.com/russinharri"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline"
-        >
-          Buy me a coffee
-        </a>
-      </footer>
-    </main>
+        <footer className="text-center mt-8 mb-4 text-sm text-gray-500">
+          Made with ❤️ —{" "}
+          <a
+            href="https://www.buymeacoffee.com/russinharri"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            Buy me a coffee
+          </a>
+        </footer>
+      </main>
+    </>
   );
 }
 
