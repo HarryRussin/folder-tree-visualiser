@@ -212,7 +212,7 @@ export default function Home() {
           content="https://folder-tree-visualiser.vercel.app/og-image.png"
         />
       </Head>
-      <main className="min-h-screen p-6 bg-gradient-to-b from-white to-gray-100">
+      <main className="min-h-screen p-6 bg-gradient-to-b from-background to-background-gradient">
         <div className="max-w-6xl mx-auto space-y-6">
           <header className="text-center my-8 max-w-2xl mx-auto px-4">
             <h1 className="text-4xl font-bold mb-3">
@@ -336,7 +336,7 @@ export default function Home() {
                     );
                     setModalTitle("vertical-tree");
                   }}
-                  className="border p-4 rounded bg-white shadow-inner cursor-pointer"
+                  className="border p-4 rounded bg-background shadow-inner cursor-pointer"
                 >
                   <div className="mt-8 overflow-auto max-w-full">
                     <VerticalTree
