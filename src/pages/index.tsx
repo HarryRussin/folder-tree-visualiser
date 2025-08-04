@@ -336,7 +336,7 @@ export default function Home() {
                     );
                     setModalTitle("vertical-tree");
                   }}
-                  className="border p-4 rounded bg-white shadow-inner cursor-pointer"
+                  className="border p-4 rounded bg-background shadow-inner cursor-pointer"
                 >
                   <div className="mt-8 overflow-auto max-w-full">
                     <VerticalTree
